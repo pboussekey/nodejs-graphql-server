@@ -1,0 +1,35 @@
+const sequelize = require('../sequelize');
+const Sequelize = require('sequelize');
+const DataLoader = require('dataloader');
+const _ = require('lodash');
+
+function abstract_model(name, fields, options){
+
+  var model = sequelize.define(name.toLowerCase(), fields,
+  _.assign({
+    freezeTableName: true,
+    paranoid: true,
+    underscored: true
+  }, options)
+);
+
+this.model = model;
+this.name = name.replace("_","");
+this._cache = new DataLoader(async function(ids) {
+  var result = await model.findAll({ raw: true });
+  var objects = _.groupBy(result, 'id');
+  return ids.map(id => objects[id] || null);
+});
+}
+
+abstract_model.prototype.get = function(ids){
+  return !ids ? null : this._cache.load(ids).then(function(objects){
+    return objects.length === 1 ? objects[0] : objects;
+  }.bind(this));
+};
+
+abstract_model.prototype.getList = function(options){
+  return this.model.findAll(_.assign({ raw: true }, options ));
+};
+
+module.exports =  abstract_model;
