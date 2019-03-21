@@ -1,13 +1,13 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLList, GraphQLString, GraphQLNonNull, GraphQLID, GraphQLInt } = graphql;
-const {Name} = require('../../loaders/models.js')['{Name}'];
-const {Name}Def = require('../defs/{name}.def');
+const User = require('../../loaders/models.js')['User'];
+const UserDef = require('../defs/user.def');
 const _ = require('lodash');
 
 module.exports = new GraphQLObjectType({
-  name: `{Name}Mutator`,
+  name: `UserMutator`,
   fields: () => {
-    var fields = {}.toString.call({Name}Def._fields) === '[object Function]' ? {Name}Def._fields() : {Name}Def._fields;
+    var fields = {}.toString.call(UserDef._fields) === '[object Function]' ? UserDef._fields() : UserDef._fields;
     var addArgs = {};
     var updateArgs = { id : {type:new GraphQLNonNull(GraphQLID)}};
     _.forIn(fields, (arg, field) => {
@@ -21,15 +21,15 @@ module.exports = new GraphQLObjectType({
       }
     });
     return {
-      add{Name}: {
-        type : {Name}Def,
+      addUser: {
+        type : UserDef,
         args : addArgs,
-        resolve : (parent, args) =>  {Name}.model.create(args)
+        resolve : (parent, args) =>  User.model.create(args)
       },
-      update{Name}: {
+      updateUser: {
         type : GraphQLInt,
         args : updateArgs,
-        resolve : (parent, args) =>  {Name}.model.update(args, { where : { id : args.id }}).then(([affectedCount]) => { {Name}.clear(args.id); return affectedCount; })
+        resolve : (parent, args) =>  User.model.update(args, { where : { id : args.id }}).then(([affectedCount]) => { User.clear(args.id); return affectedCount; })
       }
     };
   }});

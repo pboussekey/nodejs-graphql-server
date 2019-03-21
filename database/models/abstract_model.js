@@ -32,4 +32,12 @@ abstract_model.prototype.getList = function(options){
   return this.model.findAll(_.assign({ raw: true }, options ));
 };
 
+abstract_model.prototype.clear = function(id){
+  this._cache.clear(id);
+};
+
+abstract_model.prototype.clearAll = function(options){
+  this._cache.clearAll();
+};
+
 module.exports =  abstract_model;

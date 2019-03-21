@@ -8,7 +8,7 @@
     "test-server": "node app --env=test",
     "db-sync": "NODE_ENV=default node scripts/db-sync",
     "clear-cache": "NODE_ENV=default node scripts/clear-cache",
-    "create-model": "node scripts/create-model"
+    "create": "node scripts/create-struct"
   },
   "author": "",
   "license": "ISC",
@@ -27,7 +27,8 @@
     "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.11",
     "mysql2": "^1.6.5",
-    "sequelize": "^4.43.0"
+    "sequelize": "^4.43.0",
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

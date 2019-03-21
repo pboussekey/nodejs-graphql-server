@@ -1,11 +1,10 @@
 const graphql = require('graphql');
+const { GraphQLSchema } = graphql;
 const { mergeSchemas } = require("graphql-tools");
-const Defs = require('../_definitions');
-const Models = require('../_models');
-const Resolvers = require('../_resolvers');
-const Schema = require('./abstract_schema');
+const Resolvers = require('../loaders/resolvers');
+const Mutators = require('../loaders/mutators');
 const _ = require('lodash');
 
 module.exports = mergeSchemas({
-  schemas: _.values(_.mapValues(Defs,(value, key) => new Schema(key, Defs[key], Models[key], Resolvers[key]).schema ))
+  schemas: _.keys(_.merge({}, Resolvers, Mutators)).map(key => new GraphQLSchema({ query : Resolvers[key], mutation : Mutators[key]}))
 });

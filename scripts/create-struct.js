@@ -1,9 +1,16 @@
 const fs = require('fs');
 const _ = require('lodash');
 
-var argv = process.argv.slice(2);
-if(!argv.length){
-  console.log('You must provide a model name.');
+var _options = {
+  m : 'database/model',
+  d : 'schema/def',
+  r : 'schema/resolver',
+  u : 'schema/mutator'
+};
+
+var argv = require('minimist')(process.argv.slice(2));
+if(!argv._.length){
+  console.log('You must provide a name param.');
   process.exit(-1);
 }
 
@@ -16,6 +23,7 @@ function createFromTpl(name, source, destination){
         process.exit(-1);
     }
   });
+
   fs.readFile(source, "utf8", function(err, content) {
     content = content.replace(/{name}/g, name).replace(/{Name}/g, _.upperFirst(name));
     if(err){
@@ -36,8 +44,11 @@ function createFromTpl(name, source, destination){
 
 }
 
-var modelName = argv[0];
-createFromTpl(modelName, 'scripts/tpl/model.tpl', `database/models/${modelName}.model.js`);
-
-argv = argv.slice(1);
-argv.forEach(type => createFromTpl(modelName, `scripts/tpl/${type}.tpl`, `schema/${type}s/${modelName}.${type}.js`));
+var name = argv._[0]
+var types = [];
+_.forOwn(_options, (value, key) => argv[key] && types.push(value) );
+types.forEach(arg => {
+    arg = arg.split('/');
+    console.log(name, arg);
+    createFromTpl(name, `scripts/tpl/${arg[1]}.tpl`, `${arg[0]}/${arg[1]}s/${name}.${arg[1]}.js`);
+});
